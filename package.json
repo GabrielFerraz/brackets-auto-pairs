@@ -1,0 +1,12 @@
+{
+    "name": "Julian Popescu",
+    "title": "Brackets Auto Pairs",
+    "description": "Automatically pairs quotations and parenthetical characters, or wraps selected text",
+    "homepage": "https://github.com/jpopesculian/brackets-auto-pairs",
+    "version": "1.0.0",
+    "author": "Julian Popescu <me@julianpopescu.com> (http://julianpopescu.com)",
+    "license": "MIT",
+    "engines": {
+        "brackets": ">=0.24.0"
+    }
+}
