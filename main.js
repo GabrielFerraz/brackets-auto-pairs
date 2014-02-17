@@ -9,27 +9,34 @@ define(function (require, exports, module) {
         EditorManager   = brackets.getModule('editor/EditorManager'),
         DocumentManager = brackets.getModule('document/DocumentManager');
     
-    var editor, modifier, selection;
+    var editor, selection;
+    var modifier = '';
     var supportedKeys = {
-        "SU+00DE": {
-            start: '"',
-            end: '"'
-        },
         "U+00DE": {
-            start: "'",
-            end: "'"
+            'S': {
+                start: '"',
+                end: '"'
+            },
+            '': {
+                start: "'",
+                end: "'"
+            }
         },
-        "SU+0039": {
-            start: "(",
-            end: ")"
+        "U+0039": {
+            'S': {
+                start: "(",
+                end: ")"
+            }
         },
         "U+00DB": {
-            start: "[",
-            end: "]"
-        },
-        "SU+00DB": {
-            start: "{",
-            end: "}"
+            'S': {
+                start: "{",
+                end: "}"
+            },
+            '': {
+                start: "[",
+                end: "]"
+            }
         }
     };
     
@@ -53,26 +60,41 @@ define(function (require, exports, module) {
     }
     
     /**
-    * Checks for shift
+    * Gets and validates correct key 
     */
-    function shiftCheck(instance, event) {
-        var keyCode = event.keyIdentifier;
-        if (keyCode === 'Shift') {
-            modifier = 'S';
-        } else if (!supportedKeys.hasOwnProperty(keyCode)) {
-            modifier = 'X';
+    function getKey(keyCode) {
+        var key = supportedKeys[keyCode];
+        if (key !== undefined) {
+            key = key[modifier];
+            if (key !== undefined) {
+                return key;
+            }
         }
+        return false;
     }
     
     /**
     * Checks which key is pressed
     */
     function keyUp(instance, event) {
-        var keyCode = modifier + event.keyIdentifier;
-        if (supportedKeys.hasOwnProperty(keyCode)) {
-            action(supportedKeys[keyCode]);
-        } else {
+        var keyCode = event.keyIdentifier;
+        if (keyCode === 'Shift') {
             modifier = '';
+        } else {
+            var key = getKey(keyCode);
+            if (key) {
+                action(key);
+            }
+        }
+    }
+    
+    /**
+    * Checks for shift
+    */
+    function shiftCheck(instance, event) {
+        var keyCode = event.keyIdentifier;
+        if (keyCode === 'Shift') {
+            modifier = 'S';
         }
     }
     
@@ -81,7 +103,6 @@ define(function (require, exports, module) {
     */
     function update() {
         editor = EditorManager.getCurrentFullEditor();
-        
         if (editor) {
             editor._codeMirror.off('keyup', keyUp);
             editor._codeMirror.off('keydown', shiftCheck);
