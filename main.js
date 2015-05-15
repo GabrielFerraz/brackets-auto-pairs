@@ -54,7 +54,7 @@ define(function (require, exports, module) {
         // set cursor if just pairs
         if (selection.length < 3) {
             var pos = editor._codeMirror.getCursor("start");
-            pos.ch += 1;
+            pos.ch -= 1;
             editor._codeMirror.setCursor(pos);
         }
     }
